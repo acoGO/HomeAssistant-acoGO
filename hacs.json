@@ -1,0 +1,8 @@
+{
+  "name": "acoGO! integration",
+  "content_in_root": false,
+  "render_readme": true,
+  "domains": ["acogo"],
+  "country": ["PL"],
+  "homeassistant": "2024.0.0"
+}

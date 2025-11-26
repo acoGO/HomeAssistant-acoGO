@@ -1,0 +1,15 @@
+{
+    "domain": "acogo",
+    "name": "acoGO!",
+    "version": "0.0.1",
+    "documentation": "https://github.com/acoGO/homeassistant-acoGO",
+    "requirements": [
+        "aiohttp>=3.9.0"
+    ],
+    "codeowners": [
+        "@acogo"
+    ],
+    "config_flow": true,
+    "iot_class": "cloud_push",
+    "integration_type": "hub"
+}
