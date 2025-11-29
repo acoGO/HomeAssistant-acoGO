@@ -27,7 +27,8 @@ async def async_setup_entry(
 
     # Na start: zrób po jednym przycisku dla każdego urządzenia typu "gate"
     for dev in coordinator.devices:
-        if dev.get("model") in ("acoGO! 2.0 P WiFi", "acoGO! 2.0 PRO WiFi"):  # dopasujesz do swoich modeli
+        model = dev.get("model")
+        if model in ("acoGO! 2.0 P WiFi", "acoGO! 2.0 PRO WiFi"):
             entities.append(AcogoOpenGateButton(coordinator, client, dev))
 
     async_add_entities(entities)
@@ -40,7 +41,7 @@ class AcogoOpenGateButton(CoordinatorEntity[AcogoCoordinator], ButtonEntity):
         super().__init__(coordinator)
         self._client = client
         self._device = device
-        self._dev_id = device["devId"]
+        self._dev_id = device.get("devId")
 
         self._attr_name = f"{device.get('name', 'acoGO gate')} – otwórz"
         self._attr_unique_id = f"{self._dev_id}_ez_open"
