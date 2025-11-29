@@ -35,11 +35,12 @@ class AcogoConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             except AcogoApiError:
                 errors["base"] = "invalid_auth"
             else:
+                devices = data["devices"]
                 # można np. użyć liczby urządzeń w tytule
-                title = f"acoGO! ({len(data['devices'])} devices)"
+                title = f"acoGO! ({len(devices)} devices)"
                 return self.async_create_entry(
                     title=title,
-                    data={CONF_TOKEN: token},
+                    data={CONF_TOKEN: token, "devices": devices},
                 )
 
         schema = vol.Schema(

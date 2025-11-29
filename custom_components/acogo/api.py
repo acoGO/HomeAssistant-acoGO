@@ -7,7 +7,9 @@ API_BASE = "https://api.aco.com.pl/public/v2"  # tu wstaw swój URL
 
 
 class AcogoApiError(Exception):
-    pass
+    def __init__(self, message: str, status: int | None = None) -> None:
+        super().__init__(message)
+        self.status = status
 
 
 class AcogoClient:
@@ -31,15 +33,31 @@ class AcogoClient:
                     )
                     if resp.status >= 400:
                         text = await resp.text()
-                        self._logger.error(
-                            "acogo request failed: %s %s -> %s %s", method, url, resp.status, text
-                        )
-                        raise AcogoApiError(f"{resp.status}: {text}")
+                        if resp.status == 408:
+                            self._logger.debug(
+                                "acogo device offline: %s %s -> %s %s",
+                                method,
+                                url,
+                                resp.status,
+                                text,
+                            )
+                        else:
+                            self._logger.error(
+                                "acogo request failed: %s %s -> %s %s",
+                                method,
+                                url,
+                                resp.status,
+                                text,
+                            )
+                            raise AcogoApiError(f"{resp.status}: {text}", status=resp.status)
                     if resp.content_type == "application/json":
                         self._logger.debug("acogo JSON response for %s %s", method, url)
                         return await resp.json()
                     self._logger.debug("acogo text response for %s %s", method, url)
                     return await resp.text()
+        except AcogoApiError:
+            # Allow upstream handlers to decide how to treat known API errors (e.g. offline).
+            raise
         except Exception as err:
             self._logger.exception("acogo request error: %s %s", method, url)
             raise AcogoApiError(str(err)) from err
@@ -52,3 +70,16 @@ class AcogoClient:
         # przycisk "otwórz furtkę"
         path = f"/devices/{dev_id}/orders/ez-open"
         return await self._request("POST", path)
+
+    async def async_get_io_details(self, device_id: str):
+        # szczegóły urządzenia acoGO! I/O
+        return await self._request("GET", f"/devices/io/{device_id}")
+
+    async def async_get_io_state(self, device_id: str):
+        # stany wejść i wyjść I/O
+        return await self._request("GET", f"/io/{device_id}/state")
+
+    async def async_set_io_output(self, device_id: str, out_number: int, state: bool):
+        # ustaw stan wyjścia I/O
+        payload = {"state": state}
+        return await self._request("POST", f"/io/{device_id}/out/{out_number}", json=payload)

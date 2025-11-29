@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from datetime import timedelta
 import logging
 
 from homeassistant.config_entries import ConfigEntry
@@ -8,12 +7,12 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DOMAIN, CONF_TOKEN, DEFAULT_POLL_INTERVAL
+from .const import DOMAIN, CONF_TOKEN
 from .api import AcogoClient, AcogoApiError
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS: list[str] = ["button"]  # na start tylko przyciski
+PLATFORMS: list[str] = ["button", "cover", "binary_sensor"]
 
 
 class AcogoCoordinator(DataUpdateCoordinator):
@@ -22,7 +21,6 @@ class AcogoCoordinator(DataUpdateCoordinator):
             hass,
             _LOGGER,
             name="acogo",
-            update_interval=timedelta(seconds=DEFAULT_POLL_INTERVAL),
         )
         self.client = client
         self.devices = []
@@ -42,7 +40,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     client = AcogoClient(session, token)
     coordinator = AcogoCoordinator(hass, client)
 
-    await coordinator.async_config_entry_first_refresh()
+    # Nie wykonujemy automatycznych odświeżeń; korzystamy z listy urządzeń
+    # zapisanej podczas rejestracji.
+    coordinator.devices = entry.data.get("devices", [])
+    coordinator.async_set_updated_data(coordinator.devices)
 
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = {
