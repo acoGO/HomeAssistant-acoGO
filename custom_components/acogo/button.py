@@ -7,7 +7,6 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.util import slugify
 
 from .const import DOMAIN, SUPPORTED_GATE_MODELS
 from .api import AcogoClient
@@ -56,7 +55,7 @@ class AcogoOpenGateButton(CoordinatorEntity[AcogoGateCoordinator], ButtonEntity)
 
         device_name = device.get("name")
         self._attr_name = f"{device_name} – otwórz"
-        self._attr_unique_id = f"{self._dev_id}_ez_open"
+        self._attr_unique_id = f"{self._dev_id}_open_gate"
 
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, self._dev_id)},
@@ -65,8 +64,6 @@ class AcogoOpenGateButton(CoordinatorEntity[AcogoGateCoordinator], ButtonEntity)
             model=device.get("model", "acoGO!"),
             serial_number=self._dev_id,
         )
-        object_id = slugify(f"{self._dev_id}_ez_open")
-        self._attr_entity_id = f"button.{object_id}"
 
     @property
     def available(self) -> bool:
