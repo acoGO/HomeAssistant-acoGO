@@ -5,6 +5,7 @@ import logging
 from typing import Any
 
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import AcogoApiError, AcogoClient
@@ -60,7 +61,7 @@ async def async_get_or_create_gate_coordinator(
         coordinators[device_id] = coordinator
         try:
             await coordinator.async_config_entry_first_refresh()
-        except UpdateFailed as err:
+        except (UpdateFailed, ConfigEntryNotReady) as err:
             _LOGGER.warning("Initial gate refresh failed for %s: %s", device_id, err)
             coordinator._offline = True
             coordinator.async_set_updated_data({})

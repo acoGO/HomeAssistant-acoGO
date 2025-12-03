@@ -50,9 +50,16 @@ async def async_setup_entry(
                 continue
 
             out_name = details.get(f"out{out_number}Name") or f"Wyjście {out_number}"
+            out_time = details.get(f"out{out_number}Time") or 0
             entities.append(
                 AcogoIoOutputCover(
-                    io_coordinator, client, device, device_name, out_number, out_name
+                    io_coordinator,
+                    client,
+                    device,
+                    device_name,
+                    out_number,
+                    out_name,
+                    out_time,
                 )
             )
 
@@ -71,12 +78,14 @@ class AcogoIoOutputCover(CoordinatorEntity[AcogoIoCoordinator], CoverEntity):
         device_name: str,
         out_number: int,
         out_name: str,
+        out_time: int,
     ) -> None:
         super().__init__(coordinator)
         self._client = client
         self._device = device
         self._dev_id = device.get("devId")
         self._out_number = out_number
+        self._out_time = out_time
 
         self._attr_name = f"{device_name} - {out_name}"
         self._attr_unique_id = f"{self._dev_id}_out_{out_number}"
@@ -87,6 +96,10 @@ class AcogoIoOutputCover(CoordinatorEntity[AcogoIoCoordinator], CoverEntity):
             model=device.get("model", "acoGO! I/O"),
             serial_number=self._dev_id,
         )
+        if self._out_time > 0:
+            self._attr_supported_features = CoverEntityFeature.OPEN
+        else:
+            self._attr_supported_features = CoverEntityFeature.OPEN | CoverEntityFeature.CLOSE
 
     @property
     def is_closed(self) -> bool | None:
@@ -109,13 +122,15 @@ class AcogoIoOutputCover(CoordinatorEntity[AcogoIoCoordinator], CoverEntity):
         if self.coordinator.is_offline:
             raise HomeAssistantError("acoGO! I/O device is offline.")
         await self._client.async_set_io_output(self._dev_id, self._out_number, True)
-        await self.coordinator.async_request_refresh()
+        await self.coordinator.async_refresh_state()
 
     async def async_close_cover(self, **kwargs) -> None:
+        if self._out_time > 0:
+            raise HomeAssistantError("Closing not supported for timed outputs.")
         if self.coordinator.is_offline:
             raise HomeAssistantError("acoGO! I/O device is offline.")
         await self._client.async_set_io_output(self._dev_id, self._out_number, False)
-        await self.coordinator.async_request_refresh()
+        await self.coordinator.async_refresh_state()
 
 
 def _port_defined(details: dict[str, Any], prefix: str, number: int) -> bool:

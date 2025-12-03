@@ -46,16 +46,32 @@ class AcogoIoCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 raise UpdateFailed("acoGO! I/O is offline (408)") from err
             raise UpdateFailed(str(err)) from err
 
+        self._offline = False
+        return self._format_state(state)
+
+    def _format_state(self, state: dict[str, Any]) -> dict[str, Any]:
         payload: dict[str, Any] = {}
         if isinstance(state, dict):
             payload = state.get("message") or state
 
-        self._offline = False
         return {
             "inputs": payload.get("inputs") or {},
             "outputs": payload.get("outputs") or {},
             "_offline": False,
         }
+
+    async def async_refresh_state(self) -> None:
+        try:
+            state = await self._client.async_get_io_state(self.device_id)
+        except AcogoApiError as err:
+            if err.status == 408:
+                self._offline = True
+                self.async_set_updated_data({"inputs": {}, "outputs": {}, "_offline": True})
+                return
+            raise
+
+        self._offline = False
+        self.async_set_updated_data(self._format_state(state))
 
     @property
     def is_offline(self) -> bool:
