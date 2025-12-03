@@ -87,10 +87,7 @@ class AcogoIoInputSensor(CoordinatorEntity[AcogoIoCoordinator], BinarySensorEnti
 
     @property
     def available(self) -> bool:
-        data = self.coordinator.data or {}
-        if data.get("_offline"):
-            return False
-        return super().available
+        return not self.coordinator.is_offline and super().available
 
 
 def _port_defined(details: dict[str, Any], prefix: str, number: int) -> bool:

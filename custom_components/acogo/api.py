@@ -41,15 +41,15 @@ class AcogoClient:
                                 resp.status,
                                 text,
                             )
-                        else:
-                            self._logger.error(
-                                "acogo request failed: %s %s -> %s %s",
-                                method,
-                                url,
-                                resp.status,
-                                text,
-                            )
-                            raise AcogoApiError(f"{resp.status}: {text}", status=resp.status)
+                            raise AcogoApiError("Device offline (408)", status=resp.status)
+                        self._logger.error(
+                            "acogo request failed: %s %s -> %s %s",
+                            method,
+                            url,
+                            resp.status,
+                            text,
+                        )
+                        raise AcogoApiError(f"{resp.status}: {text}", status=resp.status)
                     if resp.content_type == "application/json":
                         self._logger.debug("acogo JSON response for %s %s", method, url)
                         return await resp.json()

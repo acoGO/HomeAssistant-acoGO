@@ -9,7 +9,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN
+from .const import DOMAIN, SUPPORTED_GATE_MODELS
 from .api import AcogoClient
 from . import AcogoCoordinator
 
@@ -28,7 +28,7 @@ async def async_setup_entry(
     # Na start: zrób po jednym przycisku dla każdego urządzenia typu "gate"
     for dev in coordinator.devices:
         model = dev.get("model")
-        if model in ("acoGO! 2.0 P WiFi", "acoGO! 2.0 PRO WiFi"):
+        if model in SUPPORTED_GATE_MODELS:
             entities.append(AcogoOpenGateButton(coordinator, client, dev))
 
     async_add_entities(entities)

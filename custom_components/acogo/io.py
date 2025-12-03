@@ -43,7 +43,7 @@ class AcogoIoCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         except AcogoApiError as err:
             if err.status == 408:
                 self._offline = True
-                return {"inputs": {}, "outputs": {}, "_offline": True}
+                raise UpdateFailed("acoGO! I/O is offline (408)") from err
             raise UpdateFailed(str(err)) from err
 
         payload: dict[str, Any] = {}
@@ -56,6 +56,10 @@ class AcogoIoCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             "outputs": payload.get("outputs") or {},
             "_offline": False,
         }
+
+    @property
+    def is_offline(self) -> bool:
+        return self._offline
 
 
 async def async_get_or_create_io_coordinator(
@@ -76,6 +80,7 @@ async def async_get_or_create_io_coordinator(
             await coordinator.async_config_entry_first_refresh()
         except UpdateFailed as err:
             _LOGGER.warning("Initial IO refresh failed for %s: %s", device_id, err)
-            coordinator.async_set_updated_data({"inputs": {}, "outputs": {}})
+            coordinator._offline = True
+            coordinator.async_set_updated_data({"inputs": {}, "outputs": {}, "_offline": True})
 
     return coordinator

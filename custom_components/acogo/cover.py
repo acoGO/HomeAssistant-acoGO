@@ -9,6 +9,7 @@ from homeassistant.components.cover import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -95,10 +96,7 @@ class AcogoIoOutputCover(CoordinatorEntity[AcogoIoCoordinator], CoverEntity):
 
     @property
     def available(self) -> bool:
-        data = self.coordinator.data or {}
-        if data.get("_offline"):
-            return False
-        return super().available
+        return not self.coordinator.is_offline and super().available
 
     @property
     def _current_state(self) -> bool | None:
@@ -107,10 +105,14 @@ class AcogoIoOutputCover(CoordinatorEntity[AcogoIoCoordinator], CoverEntity):
         return outputs.get(f"out{self._out_number}")
 
     async def async_open_cover(self, **kwargs) -> None:
+        if self.coordinator.is_offline:
+            raise HomeAssistantError("acoGO! I/O device is offline.")
         await self._client.async_set_io_output(self._dev_id, self._out_number, True)
         await self.coordinator.async_request_refresh()
 
     async def async_close_cover(self, **kwargs) -> None:
+        if self.coordinator.is_offline:
+            raise HomeAssistantError("acoGO! I/O device is offline.")
         await self._client.async_set_io_output(self._dev_id, self._out_number, False)
         await self.coordinator.async_request_refresh()
 
