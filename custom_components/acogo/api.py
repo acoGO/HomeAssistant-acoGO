@@ -83,3 +83,7 @@ class AcogoClient:
         # ustaw stan wyjścia I/O
         payload = {"state": state}
         return await self._request("POST", f"/io/{device_id}/out/{out_number}", json=payload)
+
+    async def async_get_gate_details(self, device_id: str):
+        # szczegóły lub status urządzenia typu "gate"
+        return await self._request("GET", f"/devices/gates/{device_id}")
