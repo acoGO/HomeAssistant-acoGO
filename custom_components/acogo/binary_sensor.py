@@ -8,6 +8,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.util import slugify
 
 from . import AcogoCoordinator
 from .api import AcogoClient
@@ -77,7 +78,10 @@ class AcogoIoInputSensor(CoordinatorEntity[AcogoIoCoordinator], BinarySensorEnti
             name=device_name,
             manufacturer="ACO",
             model=device.get("model", "acoGO! I/O"),
+            serial_number=self._dev_id,
         )
+        object_id = slugify(f"{self._dev_id}_in{in_number}")
+        self._attr_entity_id = f"binary_sensor.{object_id}"
 
     @property
     def is_on(self) -> bool | None:

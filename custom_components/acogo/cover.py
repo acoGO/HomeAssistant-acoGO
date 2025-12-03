@@ -13,6 +13,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.util import slugify
 
 from . import AcogoCoordinator
 from .api import AcogoClient
@@ -85,7 +86,10 @@ class AcogoIoOutputCover(CoordinatorEntity[AcogoIoCoordinator], CoverEntity):
             name=device_name,
             manufacturer="ACO",
             model=device.get("model", "acoGO! I/O"),
+            serial_number=self._dev_id,
         )
+        object_id = slugify(f"{self._dev_id}_out{out_number}")
+        self._attr_entity_id = f"cover.{object_id}"
 
     @property
     def is_closed(self) -> bool | None:
