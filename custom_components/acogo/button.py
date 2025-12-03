@@ -54,7 +54,7 @@ class AcogoOpenGateButton(CoordinatorEntity[AcogoGateCoordinator], ButtonEntity)
         self._dev_id = device.get("devId")
 
         device_name = device.get("name")
-        self._attr_name = f"{device_name} – otwórz"
+        self._attr_name = f"{device_name}"
         self._attr_unique_id = f"{self._dev_id}_open_gate"
 
         self._attr_device_info = DeviceInfo(

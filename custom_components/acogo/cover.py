@@ -87,7 +87,7 @@ class AcogoIoOutputCover(CoordinatorEntity[AcogoIoCoordinator], CoverEntity):
         self._out_number = out_number
         self._out_time = out_time
 
-        self._attr_name = f"{device_name} - {out_name}"
+        self._attr_name = f"{out_name}"
         self._attr_unique_id = f"{self._dev_id}_out_{out_number}"
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, self._dev_id)},
@@ -142,6 +142,10 @@ def _port_defined(details: dict[str, Any], prefix: str, number: int) -> bool:
 
 
 def _get_device_name(device: dict[str, Any], details: dict[str, Any]) -> str:
+    # Prefer name from device list, then details payload, fallback to device id.
     return (
         device.get("name")
+        or (details or {}).get("deviceName")
+        or (details or {}).get("name")
+        or device.get("devId", "")
     )
