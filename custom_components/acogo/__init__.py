@@ -7,8 +7,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DOMAIN, CONF_TOKEN
-from .api import AcogoClient, AcogoApiError
+from .api import AcogoApiError, AcogoClient
+from .const import CONF_TOKEN, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 

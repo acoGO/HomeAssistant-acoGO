@@ -43,13 +43,14 @@ class AcogoIoCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         except AcogoApiError as err:
             if err.status == 408:
                 self._offline = True
-                raise UpdateFailed("acoGO! I/O is offline (408)") from err
+                _LOGGER.debug("acoGO! I/O %s offline (408)", self.device_id)
+                return self._offline_payload()
             raise UpdateFailed(str(err)) from err
 
         self._offline = False
         return self._format_state(state)
 
-    def _format_state(self, state: dict[str, Any]) -> dict[str, Any]:
+    def _format_state(self, state: dict[str, Any], offline: bool = False) -> dict[str, Any]:
         payload: dict[str, Any] = {}
         if isinstance(state, dict):
             payload = state.get("message") or state
@@ -57,8 +58,11 @@ class AcogoIoCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         return {
             "inputs": payload.get("inputs") or {},
             "outputs": payload.get("outputs") or {},
-            "_offline": False,
+            "_offline": offline,
         }
+
+    def _offline_payload(self) -> dict[str, Any]:
+        return self._format_state({}, offline=True)
 
     async def async_refresh_state(self) -> None:
         try:
@@ -66,7 +70,8 @@ class AcogoIoCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         except AcogoApiError as err:
             if err.status == 408:
                 self._offline = True
-                self.async_set_updated_data({"inputs": {}, "outputs": {}, "_offline": True})
+                _LOGGER.debug("acoGO! I/O %s offline (408)", self.device_id)
+                self.async_set_updated_data(self._offline_payload())
                 return
             raise
 
@@ -93,6 +98,10 @@ async def async_get_or_create_io_coordinator(
         coordinator = AcogoIoCoordinator(hass, client, device_id)
         coordinators[device_id] = coordinator
         try:
+            try:
+                await coordinator.async_get_details()
+            except AcogoApiError as err:
+                _LOGGER.warning("Initial IO details fetch failed for %s: %s", device_id, err)
             await coordinator.async_config_entry_first_refresh()
         except UpdateFailed as err:
             _LOGGER.warning("Initial IO refresh failed for %s: %s", device_id, err)
