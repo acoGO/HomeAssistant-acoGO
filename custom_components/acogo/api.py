@@ -3,7 +3,7 @@ import logging
 import aiohttp
 import async_timeout
 
-API_BASE = "https://api.aco.com.pl/public/v2"  # tu wstaw swój URL
+API_BASE = "https://api.aco.com.pl/public/v2"
 
 
 class AcogoApiError(Exception):
