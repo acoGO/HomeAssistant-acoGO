@@ -27,7 +27,9 @@ class AcogoClient:
 
         try:
             async with async_timeout.timeout(10):
-                async with self._session.request(method, url, headers=headers, **kwargs) as resp:
+                async with self._session.request(
+                    method, url, headers=headers, **kwargs
+                ) as resp:
                     self._logger.debug(
                         "acogo response status: %s %s -> %s", method, url, resp.status
                     )
@@ -41,7 +43,9 @@ class AcogoClient:
                                 resp.status,
                                 text,
                             )
-                            raise AcogoApiError("Device offline (408)", status=resp.status)
+                            raise AcogoApiError(
+                                "Device offline (408)", status=resp.status
+                            )
                         self._logger.error(
                             "acogo request failed: %s %s -> %s %s",
                             method,
@@ -49,14 +53,17 @@ class AcogoClient:
                             resp.status,
                             text,
                         )
-                        raise AcogoApiError(f"{resp.status}: {text}", status=resp.status)
+                        raise AcogoApiError(
+                            f"{resp.status}: {text}", status=resp.status
+                        )
                     if resp.content_type == "application/json":
                         self._logger.debug("acogo JSON response for %s %s", method, url)
                         return await resp.json()
                     self._logger.debug("acogo text response for %s %s", method, url)
                     return await resp.text()
         except AcogoApiError:
-            # Allow upstream handlers to decide how to treat known API errors (e.g. offline).
+            # Allow upstream handlers to decide how to
+            # treat known API errors (e.g. offline).
             raise
         except Exception as err:
             self._logger.exception("acogo request error: %s %s", method, url)
@@ -82,7 +89,9 @@ class AcogoClient:
     async def async_set_io_output(self, device_id: str, out_number: int, state: bool):
         # Set the state of an I/O output.
         payload = {"state": state}
-        return await self._request("POST", f"/io/{device_id}/out/{out_number}", json=payload)
+        return await self._request(
+            "POST", f"/io/{device_id}/out/{out_number}", json=payload
+        )
 
     async def async_get_gate_details(self, device_id: str):
         # Fetch details or status for a gate device.

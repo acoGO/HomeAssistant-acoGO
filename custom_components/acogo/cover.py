@@ -99,7 +99,9 @@ class AcogoIoOutputCover(CoordinatorEntity[AcogoIoCoordinator], CoverEntity):
         if self._out_time > 0:
             self._attr_supported_features = CoverEntityFeature.OPEN
         else:
-            self._attr_supported_features = CoverEntityFeature.OPEN | CoverEntityFeature.CLOSE
+            self._attr_supported_features = (
+                CoverEntityFeature.OPEN | CoverEntityFeature.CLOSE
+            )
 
     @property
     def is_closed(self) -> bool | None:

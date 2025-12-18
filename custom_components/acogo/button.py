@@ -4,14 +4,15 @@ from homeassistant.components.button import ButtonEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, SUPPORTED_GATE_MODELS
-from .api import AcogoClient
-from .gate import AcogoGateCoordinator, async_get_or_create_gate_coordinator
 from . import AcogoCoordinator
+from .api import AcogoClient
+from .const import DOMAIN, SUPPORTED_GATE_MODELS
+from .gate import AcogoGateCoordinator, async_get_or_create_gate_coordinator
+
 
 async def async_setup_entry(
     hass: HomeAssistant,

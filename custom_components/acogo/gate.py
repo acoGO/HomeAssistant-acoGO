@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from datetime import timedelta
 import logging
+from datetime import timedelta
 from typing import Any
 
 from homeassistant.core import HomeAssistant
@@ -17,7 +17,9 @@ GATE_UPDATE_INTERVAL = timedelta(seconds=30)
 
 
 class AcogoGateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
-    def __init__(self, hass: HomeAssistant, client: AcogoClient, device_id: str) -> None:
+    def __init__(
+        self, hass: HomeAssistant, client: AcogoClient, device_id: str
+    ) -> None:
         super().__init__(
             hass,
             _LOGGER,

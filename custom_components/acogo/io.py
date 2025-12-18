@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from datetime import timedelta
 import logging
+from datetime import timedelta
 from typing import Any
 
 from homeassistant.core import HomeAssistant
@@ -16,7 +16,9 @@ IO_UPDATE_INTERVAL = timedelta(seconds=5)
 
 
 class AcogoIoCoordinator(DataUpdateCoordinator[dict[str, Any]]):
-    def __init__(self, hass: HomeAssistant, client: AcogoClient, device_id: str) -> None:
+    def __init__(
+        self, hass: HomeAssistant, client: AcogoClient, device_id: str
+    ) -> None:
         super().__init__(
             hass,
             _LOGGER,
@@ -33,7 +35,9 @@ class AcogoIoCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             try:
                 self.details = await self._client.async_get_io_details(self.device_id)
             except AcogoApiError as err:
-                _LOGGER.warning("Could not fetch IO details for %s: %s", self.device_id, err)
+                _LOGGER.warning(
+                    "Could not fetch IO details for %s: %s", self.device_id, err
+                )
                 self.details = {}
         return self.details
 
@@ -50,7 +54,9 @@ class AcogoIoCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._offline = False
         return self._format_state(state)
 
-    def _format_state(self, state: dict[str, Any], offline: bool = False) -> dict[str, Any]:
+    def _format_state(
+        self, state: dict[str, Any], offline: bool = False
+    ) -> dict[str, Any]:
         payload: dict[str, Any] = {}
         if isinstance(state, dict):
             payload = state.get("message") or state
@@ -101,11 +107,15 @@ async def async_get_or_create_io_coordinator(
             try:
                 await coordinator.async_get_details()
             except AcogoApiError as err:
-                _LOGGER.warning("Initial IO details fetch failed for %s: %s", device_id, err)
+                _LOGGER.warning(
+                    "Initial IO details fetch failed for %s: %s", device_id, err
+                )
             await coordinator.async_config_entry_first_refresh()
         except UpdateFailed as err:
             _LOGGER.warning("Initial IO refresh failed for %s: %s", device_id, err)
             coordinator._offline = True
-            coordinator.async_set_updated_data({"inputs": {}, "outputs": {}, "_offline": True})
+            coordinator.async_set_updated_data(
+                {"inputs": {}, "outputs": {}, "_offline": True}
+            )
 
     return coordinator
