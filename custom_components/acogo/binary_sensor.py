@@ -44,7 +44,7 @@ async def async_setup_entry(
             if not _port_defined(details, "in", in_number):
                 continue
 
-            in_name = details.get(f"in{in_number}Name") or f"Wejście {in_number}"
+            in_name = details.get(f"in{in_number}Name") or f"Input {in_number}"
             entities.append(
                 AcogoIoInputSensor(
                     io_coordinator, device, device_name, in_number, in_name
@@ -102,4 +102,7 @@ def _port_defined(details: dict[str, Any], prefix: str, number: int) -> bool:
 def _get_device_name(device: dict[str, Any], details: dict[str, Any]) -> str:
     return (
         device.get("name")
+        or (details or {}).get("deviceName")
+        or (details or {}).get("name")
+        or device.get("devId", "")
     )

@@ -63,27 +63,27 @@ class AcogoClient:
             raise AcogoApiError(str(err)) from err
 
     async def async_get_devices(self):
-        # GET /devices – przykładowy endpoint
+        # Example endpoint: GET /devices.
         return await self._request("GET", "/devices")
 
     async def async_open_gate(self, dev_id: str):
-        # przycisk "otwórz furtkę"
+        # Trigger the "open gate" action.
         path = f"/devices/{dev_id}/orders/ez-open"
         return await self._request("POST", path)
 
     async def async_get_io_details(self, device_id: str):
-        # szczegóły urządzenia acoGO! I/O
+        # Fetch details for an acoGO! I/O device.
         return await self._request("GET", f"/devices/io/{device_id}")
 
     async def async_get_io_state(self, device_id: str):
-        # stany wejść i wyjść I/O
+        # Fetch I/O input and output states.
         return await self._request("GET", f"/io/{device_id}/state")
 
     async def async_set_io_output(self, device_id: str, out_number: int, state: bool):
-        # ustaw stan wyjścia I/O
+        # Set the state of an I/O output.
         payload = {"state": state}
         return await self._request("POST", f"/io/{device_id}/out/{out_number}", json=payload)
 
     async def async_get_gate_details(self, device_id: str):
-        # szczegóły lub status urządzenia typu "gate"
+        # Fetch details or status for a gate device.
         return await self._request("GET", f"/devices/gates/{device_id}")

@@ -24,7 +24,7 @@ async def async_setup_entry(
 
     entities: list[AcogoOpenGateButton] = []
 
-    # Na start: zrób po jednym przycisku dla każdego urządzenia typu "gate"
+    # Create one button per supported gate device.
     for dev in coordinator.devices:
         model = dev.get("model")
         if model in SUPPORTED_GATE_MODELS:
@@ -40,7 +40,7 @@ async def async_setup_entry(
 
 
 class AcogoOpenGateButton(CoordinatorEntity[AcogoGateCoordinator], ButtonEntity):
-    _attr_translation_key = "open_gate"  # możesz potem dodać tłumaczenia
+    _attr_translation_key = "open_gate"
 
     def __init__(
         self,

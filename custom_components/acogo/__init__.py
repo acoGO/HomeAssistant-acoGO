@@ -40,8 +40,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     client = AcogoClient(session, token)
     coordinator = AcogoCoordinator(hass, client)
 
-    # Nie wykonujemy automatycznych odświeżeń; korzystamy z listy urządzeń
-    # zapisanej podczas rejestracji.
+    # Use the device list captured during setup instead of automatic refreshes.
     coordinator.devices = entry.data.get("devices", [])
     coordinator.async_set_updated_data(coordinator.devices)
 

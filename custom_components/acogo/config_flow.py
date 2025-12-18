@@ -36,7 +36,7 @@ class AcogoConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "invalid_auth"
             else:
                 devices = data["devices"]
-                # można np. użyć liczby urządzeń w tytule
+                # Include the discovered device count in the entry title.
                 title = f"acoGO! ({len(devices)} devices)"
                 return self.async_create_entry(
                     title=title,

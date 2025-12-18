@@ -49,7 +49,7 @@ async def async_setup_entry(
             if not _port_defined(details, "out", out_number):
                 continue
 
-            out_name = details.get(f"out{out_number}Name") or f"Wyjście {out_number}"
+            out_name = details.get(f"out{out_number}Name") or f"Output {out_number}"
             out_time = details.get(f"out{out_number}Time") or 0
             entities.append(
                 AcogoIoOutputCover(
