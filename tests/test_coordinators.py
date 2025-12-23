@@ -1,9 +1,6 @@
 from __future__ import annotations
 
-from types import SimpleNamespace
-
 import pytest
-from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
 from custom_components.acogo.api import AcogoApiError

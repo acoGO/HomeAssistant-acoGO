@@ -5,3 +5,19 @@ repos:
       - id: ruff-check
         # args: [--fix]
         language_version: python3.13
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: name-tests-test
+        args: [--pytest-test-first]
+
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: ./.venv/bin/pytest tests
+        language: system
+        types: [python]
+        pass_filenames: false
+        always_run: true

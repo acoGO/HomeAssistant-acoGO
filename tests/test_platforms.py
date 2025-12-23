@@ -6,10 +6,10 @@ import pytest
 from homeassistant.exceptions import HomeAssistantError
 
 from custom_components.acogo import binary_sensor, button, cover
-from custom_components.acogo.button import AcogoOpenGateButton
-from custom_components.acogo.cover import AcogoIoOutputCover
 from custom_components.acogo.binary_sensor import AcogoIoInputSensor
+from custom_components.acogo.button import AcogoOpenGateButton
 from custom_components.acogo.const import DOMAIN
+from custom_components.acogo.cover import AcogoIoOutputCover
 
 
 class DummyCoordinator:
