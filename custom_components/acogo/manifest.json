@@ -4,7 +4,8 @@
     "version": "0.0.1",
     "documentation": "https://github.com/acoGO/homeassistant-acoGO",
     "requirements": [
-        "aiohttp>=3.9.0"
+        "aiohttp>=3.9.0",
+        "async_timeout>=4.0.0"
     ],
     "codeowners": [
         "@acogo"
